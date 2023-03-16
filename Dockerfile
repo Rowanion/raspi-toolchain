@@ -1,7 +1,7 @@
 # https://solarianprogrammer.com/2018/05/06/building-gcc-cross-compiler-raspberry-pi/
 
-# Ubuntu 18.04 at the time of writing (2019-04-02)
-FROM ubuntu:latest
+# Debian Buster for GCC 8*
+FROM debian:buster
 
 # This should match the one on your raspi
 ENV GCC_VERSION gcc-8.3.0
@@ -12,22 +12,42 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 # Install some tools and compilers + clean up
 RUN apt-get update && \
-    apt-get install -y rsync git wget gcc-8 g++-8 cmake gdb gdbserver bzip2 && \
+    apt-get install -y \
+    rsync \
+    git \
+    wget \
+    gcc-8 \
+    sudo \
+    g++-8 \
+    cmake \
+    gdb \
+    gdbserver \
+    tar \
+    nano \
+    bzip2 && \
     apt-get clean autoclean && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
 # Use GCC 8 as the default
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 999 \
- && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 999 \
- && update-alternatives --install /usr/bin/cc  cc  /usr/bin/gcc-8 999 \
- && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-8 999
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 999 \
+    && update-alternatives --install /usr/bin/cc  cc  /usr/bin/gcc-8 999 \
+    && update-alternatives --install /usr/bin/c++ c++ /usr/bin/g++-8 999
 
 # Add a user called `develop`
-RUN useradd -ms /bin/bash develop
-RUN echo "develop   ALL=(ALL:ALL) ALL" >> /etc/sudoers
+ARG USERNAME=develop
+ARG USER_UID=1000
+RUN groupadd -g 1000 $USERNAME && \
+    adduser \
+    --disabled-password \
+    --gecos "" \
+    --ingroup "$USERNAME" \
+    --uid $USER_UID \
+    "$USERNAME" && \
+    echo "$USERNAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-WORKDIR /home/develop
+WORKDIR /home/$USERNAME
 
 # Download and extract GCC
 RUN wget https://ftp.gnu.org/gnu/gcc/${GCC_VERSION}/${GCC_VERSION}.tar.gz && \
@@ -123,4 +143,6 @@ RUN make install
 #RUN make -j$(nproc) all-gcc
 #RUN make install-gcc
 
-USER develop
+USER $USERNAME
+RUN echo 'include "/usr/share/nano/*.nanorc"' > ~/.nanorc && \
+    echo "set linenumbers" >> ~/.nanorc
