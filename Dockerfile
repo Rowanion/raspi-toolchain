@@ -7,6 +7,7 @@ FROM debian:buster
 ENV GCC_VERSION gcc-8.3.0
 ENV GLIBC_VERSION glibc-2.28
 ENV BINUTILS_VERSION binutils-2.31.1
+ENV NEWLIB_VERSION newlib-4.1.0
 ARG DEBIAN_FRONTEND=noninteractive
 
 
@@ -61,6 +62,12 @@ RUN wget https://ftp.gnu.org/gnu/libc/${GLIBC_VERSION}.tar.bz2 && \
 RUN wget https://ftp.gnu.org/gnu/binutils/${BINUTILS_VERSION}.tar.bz2 && \
     tar xjf ${BINUTILS_VERSION}.tar.bz2 && \
     rm ${BINUTILS_VERSION}.tar.bz2
+# Download and extract newlib
+RUN wget ftp://sourceware.org/pub/newlib/${NEWLIB_VERSION}.tar.gz && \
+    tar xzvf ${NEWLIB_VERSION}.tar.gz && \
+    rm ${NEWLIB_VERSION}.tar.gz && \
+    patch --binary -i /workspaces/raspi-toolchain/${NEWLIB_VERSION}.patch ~/${NEWLIB_VERSION}/configure
+
 # Download the GCC prerequisites
 RUN cd ${GCC_VERSION} && contrib/download_prerequisites && rm *.tar.*
 #RUN cd gcc-9.2.0 && contrib/download_prerequisites && rm *.tar.*

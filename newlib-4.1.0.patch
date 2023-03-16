@@ -1,0 +1,20 @@
+--- /home/develop/newlib-4.1.0/configure	2020-12-18 23:50:49.000000000 +0000
++++ /workspaces/raspi-toolchain/configure	2023-03-16 14:22:31.703073700 +0000
+@@ -4373,7 +4373,7 @@
+ $as_echo "$as_me:${as_lineno-$LINENO}: checking for C compiler version" >&5
+ set X $ac_compile
+ ac_compiler=$2
+-for ac_option in --version -v -V -qversion; do
++for ac_option in --version -v; do
+   { { ac_try="$ac_compiler $ac_option >&5"
+ case "(($ac_try" in
+   *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+@@ -4946,7 +4946,7 @@
+ $as_echo "$as_me:${as_lineno-$LINENO}: checking for C++ compiler version" >&5
+ set X $ac_compile
+ ac_compiler=$2
+-for ac_option in --version -v -V -qversion; do
++for ac_option in --version -v; do
+   { { ac_try="$ac_compiler $ac_option >&5"
+ case "(($ac_try" in
+   *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
